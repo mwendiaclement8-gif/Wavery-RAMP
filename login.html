@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Acey Cloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA869-TweVLbfVqw5kpoQT_ifGIr-TTSfQ",
+            authDomain: "my-day-65219.firebaseapp.com",
+            databaseURL: "https://my-day-65219-default-rtdb.firebaseio.com",
+            projectId: "my-day-65219",
+            storageBucket: "my-day-65219.firebasestorage.app",
+            messagingSenderId: "686930969383",
+            appId: "1:686930969383:web:a7e8f794d38c46c56c5f02",
+            measurementId: "G-4BL9EX9QG9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const message = document.getElementById('message');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                message.style.color = '#4CAF50';
+                message.textContent = '✅ Login successful! Redirecting...';
+                setTimeout(() => window.location.href = 'dashboard.html', 1500);
+            } catch (error) {
+                message.style.color = '#ff6b6b';
+                message.textContent = '❌ ' + error.message;
+            }
+        });
+
+        // Google Sign-In
+        document.getElementById('googleLogin').addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, provider);
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                document.getElementById('message').textContent = '❌ ' + error.message;
+            }
+        });
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-container {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 30px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+        }
+        .login-container h1 {
+            text-align: center;
+            color: #fff;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .login-container h1 i {
+            color: #667eea;
+            margin-right: 10px;
+        }
+        .login-container p.subtitle {
+            text-align: center;
+            color: #b0b0c0;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: #fff;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 16px;
+            transition: 0.3s;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: #667eea;
+            background: rgba(255,255,255,0.08);
+        }
+        .form-group input::placeholder {
+            color: #888;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 25px 0;
+            color: #888;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+        .btn-google {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            background: transparent;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .btn-google:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: #667eea;
+        }
+        .btn-google i {
+            font-size: 20px;
+            color: #ea4335;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #b0b0c0;
+        }
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1><i class="fas fa-cloud"></i>Acey Cloud</h1>
+        <p class="subtitle">Sign in to your account</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="you@example.com" required />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••••" required />
+            </div>
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+        </form>
+
+        <div class="divider">or continue with</div>
+
+        <button id="googleLogin" class="btn-google">
+            <i class="fab fa-google"></i> Sign in with Google
+        </button>
+
+        <div id="message"></div>
+
+        <div class="register-link">
+            Don't have an account? <a href="register.html">Create one</a>
+        </div>
+    </div>
+</body>
+</html>
