@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediaVault Dashboard</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            display: flex;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a2634;
+        }
+
+        .header h1 i {
+            color: #3b82f6;
+            margin-right: 10px;
+        }
+
+        .user-badge {
+            background: #eef2ff;
+            padding: 8px 18px;
+            border-radius: 40px;
+            color: #3b82f6;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f9fafb;
+            padding: 18px 20px;
+            border-radius: 16px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .stat-card .number {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a2634;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .stat-card:nth-child(2) { border-left-color: #8b5cf6; }
+        .stat-card:nth-child(3) { border-left-color: #ec4899; }
+
+        /* Upload Area */
+        .upload-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #fafcff;
+            transition: 0.2s;
+            margin-bottom: 30px;
+            cursor: pointer;
+        }
+
+        .upload-zone:hover {
+            border-color: #3b82f6;
+            background: #f0f4ff;
+        }
+
+        .upload-zone i {
+            font-size: 44px;
+            color: #3b82f6;
+            margin-bottom: 12px;
+        }
+
+        .upload-zone h3 {
+            font-weight: 600;
+            color: #1a2634;
+        }
+
+        .upload-zone p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+
+        /* Filter tabs */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            border-radius: 40px;
+            background: #f3f4f6;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .tab.active {
+            background: #1a2634;
+            color: white;
+        }
+
+        .tab i {
+            margin-right: 6px;
+        }
+
+        /* Media Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .media-card {
+            background: #f9fafb;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: 0.2s;
+            border: 1px solid #eee;
+        }
+
+        .media-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+        }
+
+        .media-thumb {
+            height: 130px;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #6b7280;
+        }
+
+        .media-thumb img,
+        .media-thumb video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .media-info {
+            padding: 12px 14px;
+        }
+
+        .media-info .name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a2634;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .media-info .meta {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .media-info .badge {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 12px;
+            border-radius: 40px;
+            background: #e0e7ff;
+            color: #3b82f6;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #9ca3af;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .dashboard { padding: 16px; }
+            .header h1 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- Header -->
+    <div class="header">
+        <h1><i class="fas fa-cloud-upload-alt"></i> MediaVault</h1>
+        <span class="user-badge"><i class="fas fa-user-circle"></i> @acy_user</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card"><div class="number" id="totalCount">0</div><div class="label">Total files</div></div>
+        <div class="stat-card"><div class="number" id="imageCount">0</div><div class="label">Images</div></div>
+        <div class="stat-card"><div class="number" id="videoCount">0</div><div class="label">Videos</div></div>
+    </div>
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uploadZone">
+        <i class="fas fa-file-upload"></i>
+        <h3>Drop files here or click to browse</h3>
+        <p>Supports images, videos, PDF, Word, Excel, and more.</p>
+        <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" />
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" data-filter="all"><i class="fas fa-th"></i> All</button>
+        <button class="tab" data-filter="image"><i class="fas fa-image"></i> Images</button>
+        <button class="tab" data-filter="video"><i class="fas fa-video"></i> Videos</button>
+        <button class="tab" data-filter="document"><i class="fas fa-file-alt"></i> Docs</button>
+    </div>
+
+    <!-- Media Grid -->
+    <div class="grid" id="mediaGrid">
+        <!-- Populated by JS -->
+        <div class="empty-state" id="emptyState">
+            <i class="fas fa-inbox"></i>
+            <p>No files uploaded yet.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <i class="fas fa-lock" style="margin-right:6px;"></i> Your files are stored locally in your browser (demo).
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----- In-memory storage (simulates dashboard) -----
+        let files = []; // each: { id, name, type, size, dataURL, fileType }
+
+        // DOM refs
+        const grid = document.getElementById('mediaGrid');
+        const emptyState = document.getElementById('emptyState');
+        const fileInput = document.getElementById('fileInput');
+        const uploadZone = document.getElementById('uploadZone');
+        const totalCount = document.getElementById('totalCount');
+        const imageCount = document.getElementById('imageCount');
+        const videoCount = document.getElementById('videoCount');
+
+        let currentFilter = 'all';
+
+        // ----- Helpers -----
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        function getFileCategory(file) {
+            const type = file.fileType || file.type || '';
+            if (type.startsWith('image/')) return 'image';
+            if (type.startsWith('video/')) return 'video';
+            return 'document';
+        }
+
+        function getIcon(category) {
+            if (category === 'image') return 'fa-image';
+            if (category === 'video') return 'fa-video';
+            return 'fa-file-alt';
+        }
+
+        function getBadgeColor(category) {
+            if (category === 'image') return '#3b82f6';
+            if (category === 'video') return '#8b5cf6';
+            return '#ec4899';
+        }
+
+        // ----- Render -----
+        function render() {
+            // Filter
+            const filtered = files.filter(f => {
+                if (currentFilter === 'all') return true;
+                return getFileCategory(f) === currentFilter;
+            });
+
+            // Update stats
+            const total = files.length;
+            const imgs = files.filter(f => getFileCategory(f) === 'image').length;
+            const vids = files.filter(f => getFileCategory(f) === 'video').length;
+            totalCount.textContent = total;
+            imageCount.textContent = imgs;
+            videoCount.textContent = vids;
+
+            // Clear grid
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                // Show empty state
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.id = 'emptyState';
+                empty.innerHTML = `<i class="fas fa-inbox"></i><p>No ${currentFilter !== 'all' ? currentFilter : ''} files.</p>`;
+                grid.appendChild(empty);
+                return;
+            }
+
+            // Build cards
+            filtered.forEach(f => {
+                const card = document.createElement('div');
+                card.className = 'media-card';
+
+                const category = getFileCategory(f);
+                const icon = getIcon(category);
+                const color = getBadgeColor(category);
+
+                // Thumbnail
+                const thumb = document.createElement('div');
+                thumb.className = 'media-thumb';
+                if (category === 'image') {
+                    const img = document.createElement('img');
+                    img.src = f.dataURL;
+                    img.alt = f.name;
+                    thumb.appendChild(img);
+                } else if (category === 'video') {
+                    const video = document.createElement('video');
+                    video.src = f.dataURL;
+                    video.muted = true;
+                    video.preload = 'metadata';
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    video.style.objectFit = 'cover';
+                    thumb.appendChild(video);
+                } else {
+                    // Document: show icon
+                    thumb.innerHTML = `<i class="fas ${icon}" style="font-size:40px; color:#6b7280;"></i>`;
+                }
+
+                // Info
+                const info = document.createElement('div');
+                info.className = 'media-info';
+                info.innerHTML = `
+                    <div class="name">${f.name}</div>
+                    <div class="meta">${formatSize(f.size)}</div>
+                    <span class="badge" style="background:${color}20; color:${color};">${category}</span>
+                `;
+
+                card.appendChild(thumb);
+                card.appendChild(info);
+                grid.appendChild(card);
+            });
+        }
+
+        // ----- Add files -----
+        function addFiles(fileList) {
+            const newFiles = [];
+            for (let i = 0; i < fileList.length; i++) {
+                const file = fileList[i];
+                // Skip if over 20MB (optional)
+                if (file.size > 20 * 1024 * 1024) {
+                    alert(`⚠️ ${file.name} is too large (max 20MB). Skipped.`);
+                    continue;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    newFiles.push({
+                        id: Date.now() + '_' + i + '_' + Math.random().toString(36).substr(2, 4),
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        dataURL: e.target.result,
+                    });
+                    if (newFiles.length === fileList.length) {
+                        // All read
+                        files = files.concat(newFiles);
+                        render();
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+            // Edge case: no files after filter
+            if (fileList.length === 0) {
+                render();
+            } else {
+                // If only one file, onload triggers; but we need to handle zero-length
+                // We'll just rely on the counter inside.
+            }
+        }
+
+        // Override addFiles to handle empty and single file correctly:
+        // (We'll use a promise-based approach for safety)
+        function addFilesSafe(fileList) {
+            if (!fileList || fileList.length === 0) return;
+            const promises = [];
+            const validFiles = [];
+            for (let i = 0; i < fileList.length; i++) {
+                const file = fileList[i];
+                if (file.size > 20 * 1024 * 1024) {
+                    alert(`⚠️ ${file.name} is too large (max 20MB). Skipped.`);
+                    continue;
+                }
+                validFiles.push(file);
+                const p = new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        resolve({
+                            id: Date.now() + '_' + i + '_' + Math.random().toString(36).substr(2, 6),
+                            name: file.name,
+                            size: file.size,
+                            type: file.type,
+                            dataURL: e.target.result,
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
+                promises.push(p);
+            }
+
+            Promise.all(promises).then((results) => {
+                files = files.concat(results);
+                render();
+            });
+        }
+
+        // ----- Event listeners -----
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                addFilesSafe(e.target.files);
+                fileInput.value = ''; // reset
+            }
+        });
+
+        // Drag & drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = '#3b82f6';
+            uploadZone.style.background = '#eef2ff';
+        });
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.style.borderColor = '#d1d5db';
+            uploadZone.style.background = '#fafcff';
+        });
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = '#d1d5db';
+            uploadZone.style.background = '#fafcff';
+            if (e.dataTransfer.files.length > 0) {
+                addFilesSafe(e.dataTransfer.files);
+            }
+        });
+
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                render();
+            });
+        });
+
+        // Seed with a couple of demo files (so it's not empty on load)
+        // (using sample data URLs – small placeholder images)
+        function seedDemo() {
+            const demoFiles = [
+                {
+                    id: 'demo1',
+                    name: 'Screenshot_2026.png',
+                    size: 245000,
+                    type: 'image/png',
+                    dataURL: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="130" viewBox="0 0 200 130"%3E%3Crect width="200" height="130" fill="%233b82f6"/%3E%3Ctext x="50" y="70" fill="white" font-family="Arial" font-size="18"%3E📸 Image%3C/text%3E%3C/svg%3E'
+                },
+                {
+                    id: 'demo2',
+                    name: 'Product_video.mp4',
+                    size: 1200000,
+                    type: 'video/mp4',
+                    dataURL: 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAQxtZGF0AAAAMgAAACh3cnZrbG9n' // dummy video placeholder
+                },
+                {
+                    id: 'demo3',
+                    name: 'Contract_2026.pdf',
+                    size: 89000,
+                    type: 'application/pdf',
+                    dataURL: 'data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwovUGFnZXMgMiAwIFI+PgplbmRvYmoK' 
+                }
+            ];
+            // Only seed if empty
+            if (files.length === 0) {
+                files = demoFiles;
+                render();
+            }
+        }
+
+        seedDemo();
+        render(); // final render
+    })();
+</script>
+
+</body>
+</html>
